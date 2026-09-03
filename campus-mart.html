@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusMart — The Student Notice Board Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --cream:#F7F2E7;
+    --paper:#FFFDF7;
+    --ink:#20223B;
+    --ink-70: rgba(32,34,59,0.7);
+    --ink-45: rgba(32,34,59,0.45);
+    --amber:#F0AF00;
+    --amber-ink:#5C4400;
+    --forest:#2F6F4E;
+    --brick:#C1442C;
+    --line:#E4D9BE;
+    --line-strong:#D2C39E;
+    --shadow-pin: 0 1px 0 rgba(32,34,59,0.06);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(32,34,59,0.05) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  h1,h2,h3, .logo, .display{
+    font-family:'Fraunces', serif;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection{ background:var(--amber); color:var(--ink); }
+
+  a{ color:inherit; }
+
+  /* focus visibility */
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* NAVBAR */
+  nav{
+    background: var(--ink);
+    height: 68px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 0 6%;
+    position: sticky;
+    top:0;
+    z-index: 200;
+    border-bottom: 3px solid var(--amber);
+  }
+
+  .logo{
+    color: var(--paper);
+    font-size: 24px;
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .logo .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--amber);
+    display:inline-block;
+  }
+
+  .nav-links{ display:flex; gap:30px; list-style:none; }
+  .nav-links a{
+    text-decoration:none;
+    color: rgba(255,255,255,0.75);
+    font-weight:500;
+    font-size: 14.5px;
+    cursor:pointer;
+    position:relative;
+    padding: 4px 0;
+    transition: color .15s ease;
+  }
+  .nav-links a:hover{ color:#fff; }
+  .nav-links a::after{
+    content:"";
+    position:absolute; left:0; bottom:-4px;
+    width:0; height:2px; background:var(--amber);
+    transition: width .2s ease;
+  }
+  .nav-links a:hover::after{ width:100%; }
+
+  .nav-right{ display:flex; align-items:center; gap:16px; }
+
+  .cart-btn{
+    background:transparent;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: var(--paper);
+    width:40px; height:40px;
+    border-radius: 10px;
+    cursor:pointer;
+    font-size:17px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .cart-btn:hover{ border-color: var(--amber); }
+  .cart-btn:active{ transform: scale(0.92); }
+
+  .cart-count{
+    position:absolute;
+    top:-7px; right:-7px;
+    background: var(--brick);
+    color:#fff;
+    font-size: 10.5px;
+    font-weight:700;
+    min-width:18px; height:18px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    padding: 0 3px;
+  }
+  .cart-count.bump{ animation: bump .35s ease; }
+  @keyframes bump{
+    0%{ transform: scale(1); }
+    40%{ transform: scale(1.5); }
+    100%{ transform: scale(1); }
+  }
+
+  .sell-btn{
+    background: var(--amber);
+    color: var(--amber-ink);
+    border:none;
+    padding: 10px 18px;
+    border-radius: 9px;
+    cursor:pointer;
+    font-weight:700;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .sell-btn:hover{ box-shadow: 0 4px 14px rgba(240,175,0,0.4); transform: translateY(-1px); }
+  .sell-btn:active{ transform: translateY(0) scale(0.97); }
+
+  /* HERO */
+  .hero{
+    padding: 76px 6% 90px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 50px;
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  .hero-content{ max-width: 600px; }
+
+  .hero-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    padding: 6px 13px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-70);
+    margin-bottom: 22px;
+  }
+  .hero-kicker .pin{ color: var(--brick); font-size: 12px; }
+
+  .hero h1{
+    font-size: 52px;
+    line-height: 1.08;
+    font-weight: 600;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .hero h1 .line{
+    display:block;
+    overflow:hidden;
+  }
+  .hero h1 .line span{
+    display:inline-block;
+    transform: translateY(110%);
+    animation: riseUp .7s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .hero h1 .accent{ color: var(--brick); font-style: italic; font-weight: 500; }
+
+  @keyframes riseUp{
+    to{ transform: translateY(0); }
+  }
+
+  .hero p{
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-70);
+    margin-bottom: 28px;
+    max-width: 480px;
+  }
+
+  .search-box{
+    background: var(--paper);
+    padding: 6px;
+    border-radius: 12px;
+    display:flex;
+    max-width: 480px;
+    border: 1px solid var(--line-strong);
+    box-shadow: var(--shadow-pin);
+  }
+  .search-box input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+  }
+  .search-box input::placeholder{ color: var(--ink-45); }
+  .search-box button{
+    background: var(--ink);
+    border:none;
+    color:#fff;
+    padding: 0 22px;
+    border-radius: 8px;
+    cursor:pointer;
+    font-weight:600;
+    font-size: 14px;
+    transition: background .15s ease;
+  }
+  .search-box button:hover{ background:#33365c; }
+
+  /* hero pinned card */
+  .hero-card{
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    padding: 30px;
+    border-radius: 14px;
+    width: 280px;
+    flex-shrink:0;
+    transform: rotate(2.5deg);
+    box-shadow: 0 14px 30px rgba(32,34,59,0.09);
+    position:relative;
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    top:-11px; left:50%;
+    transform: translateX(-50%);
+    width:22px; height:22px;
+    background: var(--brick);
+    border-radius:50%;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+  }
+  .hero-card .hc-photo{
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 14px;
+    display:block;
+  }
+  .hero-card .tag{
+    display:inline-block;
+    background: rgba(47,111,78,0.12);
+    color: var(--forest);
+    font-size: 12px;
+    font-weight:700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+  }
+  .hero-card h3{ font-size:19px; margin-bottom: 6px; font-weight:600; }
+  .hero-card p{ font-size: 13.5px; color: var(--ink-70); line-height:1.5; }
+  .hero-card .stat-row{
+    display:flex; justify-content:space-between;
+    margin-top:18px; padding-top:16px;
+    border-top: 1px dashed var(--line-strong);
+  }
+  .hero-card .stat-row div{ text-align:left; }
+  .hero-card .stat-row strong{ display:block; font-size:19px; font-family:'Fraunces',serif; }
+  .hero-card .stat-row span{ font-size:11.5px; color:var(--ink-45); }
+
+  /* SECTION */
+  .section{ padding: 20px 6% 60px; max-width: 1360px; margin: 0 auto; }
+
+  .section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom: 26px;
+    gap: 20px;
+  }
+  .section-title h2{ font-size: 27px; font-weight:600; }
+  .section-title .sub{ color: var(--ink-45); font-size: 13.5px; margin-top:4px; }
+
+  /* CATEGORIES */
+  .categories{
+    display:flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .category{
+    background: var(--paper);
+    padding: 12px 18px;
+    text-align:left;
+    border-radius: 10px;
+    cursor:pointer;
+    border: 1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .category:hover{
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+  .category-icon{
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .category p{ font-weight:600; font-size: 14px; }
+
+  /* FILTERS */
+  .filters{
+    display:flex;
+    gap: 8px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .filters button{
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    cursor:pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-70);
+    transition: all .15s ease;
+  }
+  .filters button.active,
+  .filters button:hover{
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+
+  /* PRODUCTS */
+  .products{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+
+  .product-card{
+    background: var(--paper);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    opacity:0;
+    animation: cardIn .45s ease forwards;
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .product-card:nth-child(4n+1){ animation-delay: 0.02s; }
+  .product-card:nth-child(4n+2){ animation-delay: 0.06s; }
+  .product-card:nth-child(4n+3){ animation-delay: 0.10s; }
+  .product-card:nth-child(4n+4){ animation-delay: 0.14s; }
+
+  .product-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 16px 30px rgba(32,34,59,0.1);
+    border-color: var(--line-strong);
+  }
+
+  .product-image{
+    height: 176px;
+    background: #EEE6D2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-image img{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+    display:block;
+    transition: transform .3s ease;
+  }
+  .product-card:hover .product-image img{ transform: scale(1.05); }
+  .product-image .img-fallback{
+    font-size: 52px;
+    color: var(--ink-45);
+  }
+
+  .condition{
+    position:absolute;
+    top:10px; left:10px;
+    background: var(--ink);
+    color:#fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight:700;
+  }
+  .condition.new{ background: var(--forest); }
+
+  .heart{
+    position:absolute;
+    top:10px; right:10px;
+    background: rgba(255,255,255,0.92);
+    width:32px; height:32px;
+    border-radius:50%;
+    display:flex; justify-content:center; align-items:center;
+    cursor:pointer;
+    border:none;
+    font-size:16px;
+    color: var(--ink-70);
+    transition: transform .15s ease;
+  }
+  .heart:hover{ transform: scale(1.1); }
+  .heart.liked{ color: var(--brick); animation: heartPop .35s ease; }
+  @keyframes heartPop{
+    0%{ transform: scale(1); }
+    45%{ transform: scale(1.35); }
+    100%{ transform: scale(1); }
+  }
+
+  .product-info{ padding: 15px 16px 16px; }
+
+  .product-info h3{
+    font-size: 15.5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.3;
+    min-height: 40px;
+  }
+
+  .product-info .price{
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-family: 'Fraunces', serif;
+  }
+
+  .seller{ color: var(--ink-45); font-size: 12.5px; margin-bottom: 14px; }
+
+  .product-buttons{ display:flex; gap:8px; }
+
+  .details-btn, .cart-btn-item{
+    flex:1;
+    padding: 9px;
+    border-radius: 8px;
+    cursor:pointer;
+    font-weight:600;
+    font-size: 13px;
+    transition: transform .12s ease, background .15s ease;
+  }
+  .details-btn{
+    background: transparent;
+    border: 1.5px solid var(--line-strong);
+    color: var(--ink);
+  }
+  .details-btn:hover{ border-color: var(--ink); }
+  .cart-btn-item{
+    background: var(--ink);
+    color: #fff;
+    border:none;
+  }
+  .cart-btn-item:hover{ background:#33365c; }
+  .cart-btn-item:active, .details-btn:active{ transform: scale(0.96); }
+
+  /* SELL SECTION */
+  .sell-section{ padding: 60px 6%; }
+
+  .sell-container{
+    background: var(--paper);
+    max-width: 860px;
+    margin: auto;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1.5px dashed var(--line-strong);
+    position: relative;
+  }
+  .sell-container::before{
+    content: "📌";
+    position:absolute;
+    top: -18px; left: 40px;
+    font-size: 30px;
+    transform: rotate(-8deg);
+  }
+
+  .sell-container h2{ margin-bottom: 6px; font-size: 26px; font-weight:600; }
+  .sell-container > p.lead{ color: var(--ink-45); margin-bottom: 28px; font-size: 14.5px; }
+
+  .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  .form-group{ display:flex; flex-direction:column; gap:7px; }
+  .form-group.full{ grid-column: 1/-1; }
+
+  .form-group label{ font-weight:600; font-size: 13px; color: var(--ink-70); }
+
+  .form-group input, .form-group select, .form-group textarea{
+    padding: 12px 13px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 8px;
+    outline:none;
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    background: var(--cream);
+    color: var(--ink);
+    transition: border-color .15s ease;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus{
+    border-color: var(--ink);
+  }
+  .form-group textarea{ resize:vertical; min-height: 90px; }
+
+  .submit-btn{
+    width:100%;
+    padding: 14px;
+    border:none;
+    background: var(--amber);
+    color: var(--amber-ink);
+    border-radius: 9px;
+    font-size: 15.5px;
+    font-weight: 700;
+    cursor:pointer;
+    margin-top: 22px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .submit-btn:hover{ box-shadow: 0 6px 18px rgba(240,175,0,0.4); transform: translateY(-1px); }
+  .submit-btn:active{ transform: translateY(0) scale(0.98); }
+
+  /* STATS */
+  .stats{ display:grid; grid-template-columns: repeat(4,1fr); gap:18px; }
+  .stat{
+    background: var(--paper);
+    padding: 26px 20px;
+    text-align:left;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  .stat h3{ font-size: 32px; font-weight:700; font-family:'Fraunces',serif; }
+  .stat p{ color: var(--ink-45); margin-top: 5px; font-size: 13.5px; }
+
+  /* ABOUT */
+  .about-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:18px; }
+  .about-item{
+    background: var(--paper);
+    padding: 24px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  .about-item .icon{ font-size: 26px; margin-bottom: 10px; display:block; }
+  .about-item h4{ font-size: 15px; font-weight:600; margin-bottom: 5px; font-family:'Inter',sans-serif; }
+  .about-item p{ font-size: 13px; color: var(--ink-45); line-height:1.5; }
+
+  /* FOOTER */
+  footer{ background: var(--ink); color:#fff; padding: 50px 6% 22px; margin-top: 30px; }
+
+  .footer-content{
+    display:grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 35px;
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  footer h3{ margin-bottom: 15px; font-size: 17px; font-weight:600; }
+  footer p, footer li{ color: rgba(255,255,255,0.55); line-height:1.9; list-style:none; font-size: 13.5px; }
+  footer ul li{ cursor:pointer; transition: color .15s ease; }
+  footer ul li:hover{ color: var(--amber); }
+
+  .copyright{
+    text-align:center;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-top: 34px;
+    padding-top: 20px;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    max-width: 1360px;
+    margin-left:auto; margin-right:auto;
+  }
+
+  /* MODAL */
+  .modal{
+    display:none;
+    position:fixed; inset:0;
+    background: rgba(20,20,35,0.55);
+    backdrop-filter: blur(2px);
+    z-index:500;
+    justify-content:center; align-items:center;
+    padding:20px;
+  }
+  .modal.show{ display:flex; animation: fadeIn .18s ease; }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+  .modal-content{
+    background: var(--paper);
+    width:100%; max-width: 480px;
+    padding: 32px;
+    border-radius: 16px;
+    position:relative;
+    transform: scale(0.94) translateY(10px);
+    animation: modalIn .22s cubic-bezier(.2,.9,.3,1.2) forwards;
+  }
+  @keyframes modalIn{ to{ transform: scale(1) translateY(0); } }
+
+  .close{
+    position:absolute; right:18px; top:15px;
+    font-size:22px; cursor:pointer;
+    color: var(--ink-45);
+    width:32px; height:32px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition: background .15s ease;
+  }
+  .close:hover{ background: var(--cream); }
+
+  .modal-product{ text-align:left; }
+  .modal-product .big-icon-wrap{
+    height: 220px;
+    background: #EEE6D2;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .modal-product .big-icon-wrap img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .modal-product h2{ margin-bottom: 6px; font-size: 21px; font-weight:600; }
+  .modal-price{ color: var(--ink); font-size: 24px; font-weight:700; margin: 8px 0 12px; font-family:'Fraunces',serif; }
+  .modal-product p#modalDescription{ color: var(--ink-70); font-size: 14px; line-height:1.6; margin-bottom: 12px; }
+  .modal-product p#modalSeller{ color: var(--ink-45); font-size: 13px; margin-bottom: 20px; }
+
+  /* CART DRAWER */
+  .drawer-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background: rgba(20,20,35,0.45);
+    z-index: 600;
+  }
+  .drawer-overlay.show{ display:block; animation: fadeIn .18s ease; }
+
+  .cart-drawer{
+    position:fixed;
+    top:0; right:0;
+    height:100%;
+    width: 380px;
+    max-width: 92vw;
+    background: var(--paper);
+    z-index: 601;
+    display:flex;
+    flex-direction:column;
+    transform: translateX(100%);
+    transition: transform .28s cubic-bezier(.2,.85,.3,1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+  }
+  .cart-drawer.show{ transform: translateX(0); }
+
+  .drawer-head{
+    padding: 22px 22px 16px;
+    border-bottom: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .drawer-head h3{ font-size: 20px; font-weight:600; }
+  .drawer-close{
+    background:none; border:none; font-size:20px; cursor:pointer; color: var(--ink-45);
+    width:32px;height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .drawer-close:hover{ background: var(--cream); }
+
+  .drawer-items{ flex:1; overflow-y:auto; padding: 10px 22px; }
+
+  .drawer-item{
+    display:flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    align-items:center;
+  }
+  .drawer-item .di-icon{
+    width:52px; height:52px;
+    background: var(--cream);
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .drawer-item .di-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .drawer-item .di-info{ flex:1; min-width:0; }
+  .drawer-item .di-info h4{ font-size: 13.5px; font-weight:600; margin-bottom: 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .drawer-item .di-info span{ font-size: 13px; color: var(--ink-45); }
+  .drawer-item .di-remove{
+    background:none; border:none; cursor:pointer; color: var(--ink-45);
+    font-size:13px; text-decoration: underline;
+    flex-shrink:0;
+  }
+  .drawer-item .di-remove:hover{ color: var(--brick); }
+
+  .drawer-empty{
+    text-align:center; padding: 60px 20px; color: var(--ink-45);
+  }
+  .drawer-empty .e-icon{ font-size: 40px; display:block; margin-bottom: 12px; }
+
+  .drawer-foot{
+    padding: 18px 22px 22px;
+    border-top: 1px solid var(--line);
+  }
+  .drawer-total{
+    display:flex; justify-content:space-between;
+    font-size: 15px; font-weight:600;
+    margin-bottom: 14px;
+  }
+  .drawer-total strong{ font-family:'Fraunces',serif; font-size: 19px; }
+
+  /* SOUND TOGGLE */
+  .sound-toggle{
+    background:transparent;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: var(--paper);
+    width:40px; height:40px;
+    border-radius: 10px;
+    cursor:pointer;
+    font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color .15s ease;
+  }
+  .sound-toggle:hover{ border-color: var(--amber); }
+  .sound-toggle.muted{ opacity: 0.5; }
+
+  /* TOAST */
+  .toast{
+    position:fixed;
+    bottom:25px; left:50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color:#fff;
+    padding: 13px 22px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight:500;
+    opacity:0;
+    transition: .25s ease;
+    z-index:1000;
+    display:flex; align-items:center; gap:8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  }
+  .toast.show{ transform: translateX(-50%) translateY(0); opacity:1; }
+
+  /* MOBILE */
+  @media (max-width: 1000px){
+    .products{ grid-template-columns: repeat(2, 1fr); }
+    .stats{ grid-template-columns: repeat(2,1fr); }
+    .about-grid{ grid-template-columns: repeat(2,1fr); }
+    .hero{ flex-direction: column; align-items:flex-start; }
+    .hero-card{ align-self:center; }
+  }
+
+  @media (max-width: 750px){
+    nav{ padding: 0 4%; }
+    .nav-links{ display:none; }
+    .hero{ padding: 40px 5% 60px; }
+    .hero h1{ font-size: 34px; }
+    .products{ grid-template-columns: repeat(2, 1fr); }
+    .footer-content{ grid-template-columns: 1fr 1fr; }
+    .form-grid{ grid-template-columns: 1fr; }
+    .form-group.full{ grid-column: auto; }
+    .cart-drawer{ width: 100vw; max-width:100vw; }
+  }
+
+  @media (max-width: 480px){
+    .products{ grid-template-columns: 1fr; }
+    .about-grid{ grid-template-columns: 1fr; }
+    .stats{ grid-template-columns: 1fr 1fr; }
+    .section{ padding: 20px 5% 40px; }
+    .sell-section{ padding: 40px 5%; }
+    .footer-content{ grid-template-columns: 1fr; }
+    .hero h1{ font-size: 30px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count:1 !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo"><span class="dot"></span>Campus<span style="color:var(--amber)">Mart</span></div>
+
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#products">Buy</a></li>
+      <li><a href="#sell">Sell</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle sound effects">🔊</button>
+      <button class="cart-btn" onclick="openDrawer()" title="View cart">
+        🛒
+        <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </button>
+      <button class="sell-btn" onclick="scrollToSell()">+ Sell Item</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-kicker"><span class="pin">📍</span> Live listings from 25+ campuses</div>
+
+      <h1>
+        <span class="line"><span style="animation-delay:.05s">Buy & sell</span></span>
+        <span class="line"><span style="animation-delay:.15s" class="accent">smarter</span></span>
+        <span class="line"><span style="animation-delay:.25s">on campus.</span></span>
+      </h1>
+
+      <p>
+        The student-to-student marketplace for books, electronics, notes,
+        furniture and more — priced fairly, sold locally, no middlemen.
+      </p>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search books, laptops, cycles…" onkeyup="searchProducts()">
+        <button onclick="searchProducts()">Search</button>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <img class="hc-photo" src="https://loremflickr.com/400/240/notebook,handwriting?lock=201" alt="">
+      <span class="tag">● Available now</span>
+      <h3>DBMS Complete Notes</h3>
+      <p>Handwritten, full syllabus, from a topper at ABC College.</p>
+      <div class="stat-row">
+        <div><strong>₹150</strong><span>Listed price</span></div>
+        <div><strong>4 min</strong><span>Avg. reply time</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="section" id="categories">
+    <div class="section-title">
+      <div>
+        <h2>Browse categories</h2>
+        <div class="sub">Jump straight to what you need</div>
+      </div>
+    </div>
+
+    <div class="categories">
+      <div class="category" onclick="filterCategory('Books')"><img class="category-icon" src="https://loremflickr.com/80/80/textbooks?lock=101" alt=""><p>Books</p></div>
+      <div class="category" onclick="filterCategory('Electronics')"><img class="category-icon" src="https://loremflickr.com/80/80/laptop?lock=102" alt=""><p>Electronics</p></div>
+      <div class="category" onclick="filterCategory('Notes')"><img class="category-icon" src="https://loremflickr.com/80/80/notebook?lock=103" alt=""><p>Notes</p></div>
+      <div class="category" onclick="filterCategory('Furniture')"><img class="category-icon" src="https://loremflickr.com/80/80/deskchair?lock=104" alt=""><p>Furniture</p></div>
+      <div class="category" onclick="filterCategory('Cycles')"><img class="category-icon" src="https://loremflickr.com/80/80/bicycle?lock=105" alt=""><p>Cycles</p></div>
+      <div class="category" onclick="filterCategory('Other')"><img class="category-icon" src="https://loremflickr.com/80/80/backpack?lock=106" alt=""><p>Others</p></div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="section" id="products">
+    <div class="section-title">
+      <div>
+        <h2>Latest listings</h2>
+        <div class="sub" id="productCount"></div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="active" onclick="filterCategory('All', this)">All</button>
+      <button onclick="filterCategory('Books', this)">Books</button>
+      <button onclick="filterCategory('Electronics', this)">Electronics</button>
+      <button onclick="filterCategory('Notes', this)">Notes</button>
+      <button onclick="filterCategory('Furniture', this)">Furniture</button>
+      <button onclick="filterCategory('Cycles', this)">Cycles</button>
+    </div>
+
+    <div class="products" id="productContainer"></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section">
+    <div class="stats">
+      <div class="stat"><h3 data-count="2500">0</h3><p>Students</p></div>
+      <div class="stat"><h3 data-count="5000">0</h3><p>Products sold</p></div>
+      <div class="stat"><h3 data-count="25">0</h3><p>Colleges</p></div>
+      <div class="stat"><h3 data-count="10" data-prefix="₹" data-suffix="L+">0</h3><p>Student savings</p></div>
+    </div>
+  </section>
+
+  <!-- SELL ITEM -->
+  <section class="sell-section" id="sell">
+    <div class="sell-container">
+      <h2>Sell your item</h2>
+      <p class="lead">Turn your unused college stuff into money — takes under a minute.</p>
+
+      <form id="sellForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Item name</label>
+            <input type="text" id="itemName" placeholder="e.g. Engineering Mathematics Book" required>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="itemPrice" placeholder="e.g. 500" required>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="itemCategory" required>
+              <option value="">Select category</option>
+              <option>Books</option>
+              <option>Electronics</option>
+              <option>Notes</option>
+              <option>Furniture</option>
+              <option>Cycles</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Condition</label>
+            <select id="itemCondition" required>
+              <option value="">Select condition</option>
+              <option>Like New</option>
+              <option>Good</option>
+              <option>Used</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea id="itemDescription" placeholder="Describe your item…" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Your name</label>
+            <input type="text" id="sellerName" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label>College</label>
+            <input type="text" id="collegeName" placeholder="College name" required>
+          </div>
+        </div>
+
+        <button class="submit-btn" type="submit">Publish listing</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section-title">
+      <div>
+        <h2>Why CampusMart</h2>
+        <div class="sub">Built for students, not shopping malls</div>
+      </div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-item"><span class="icon">🔒</span><h4>Student verified</h4><p>Every listing is tied to a real college ID.</p></div>
+      <div class="about-item"><span class="icon">💰</span><h4>Fair pricing</h4><p>No platform fees eating into your sale.</p></div>
+      <div class="about-item"><span class="icon">🤝</span><h4>Meet locally</h4><p>Deal directly with sellers on your campus.</p></div>
+      <div class="about-item"><span class="icon">⚡</span><h4>List in a minute</h4><p>No photos required to get started.</p></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>CampusMart</h3>
+        <p>The marketplace built specially for college students. Buy for less. Sell what you don't need.</p>
+      </div>
+      <div>
+        <h3>Marketplace</h3>
+        <ul><li>Buy products</li><li>Sell items</li><li>Categories</li><li>Wishlist</li></ul>
+      </div>
+      <div>
+        <h3>Support</h3>
+        <ul><li>Help center</li><li>Safety tips</li><li>Contact us</li><li>Report listing</li></ul>
+      </div>
+      <div>
+        <h3>Follow us</h3>
+        <p>Instagram</p><p>Facebook</p><p>LinkedIn</p>
+      </div>
+    </div>
+    <div class="copyright">© 2026 CampusMart. Made for students.</div>
+  </footer>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <div class="modal-product">
+        <div class="big-icon-wrap"><img id="modalIcon" src="" alt=""></div>
+        <h2 id="modalTitle">Product</h2>
+        <div class="modal-price" id="modalPrice">₹0</div>
+        <p id="modalDescription">Product description</p>
+        <p id="modalSeller"></p>
+        <button class="submit-btn" style="margin-top:0;" onclick="addToCartFromModal()">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="drawer-head">
+      <h3>Your cart</h3>
+      <button class="drawer-close" onclick="closeDrawer()">×</button>
+    </div>
+    <div class="drawer-items" id="drawerItems"></div>
+    <div class="drawer-foot">
+      <div class="drawer-total"><span>Total</span><strong id="drawerTotal">₹0</strong></div>
+      <button class="submit-btn" style="margin-top:0;" onclick="checkoutCart()">Checkout</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Added to cart!</div>
+
+  <script>
+    /* ---------- SOUND ENGINE ---------- */
+    let soundOn = true;
+    let audioCtx = null;
+
+    function getCtx(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type, startGain, delay){
+      if(!soundOn) return;
+      try{
+        const ctx = getCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.value = freq;
+        const now = ctx.currentTime + (delay || 0);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(startGain || 0.15, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }catch(e){ /* audio unavailable, fail silently */ }
+    }
+
+    function sfxClick(){ playTone(720, 0.08, 'sine', 0.12); }
+    function sfxAdd(){ playTone(520, 0.09, 'triangle', 0.15); playTone(780, 0.12, 'triangle', 0.12, 0.05); }
+    function sfxSuccess(){ playTone(523, 0.1, 'sine', 0.14); playTone(659, 0.1, 'sine', 0.14, 0.09); playTone(784, 0.18, 'sine', 0.14, 0.18); }
+    function sfxWhoosh(){ playTone(200, 0.18, 'sawtooth', 0.05); }
+    function sfxRemove(){ playTone(340, 0.1, 'sine', 0.1); }
+    function sfxLike(){ playTone(880, 0.07, 'sine', 0.12); playTone(1100, 0.09, 'sine', 0.1, 0.05); }
+
+    function toggleSound(){
+      soundOn = !soundOn;
+      const btn = document.getElementById('soundToggle');
+      btn.textContent = soundOn ? '🔊' : '🔇';
+      btn.classList.toggle('muted', !soundOn);
+      if(soundOn) sfxClick();
+    }
+
+    /* ---------- PRODUCT DATA ---------- */
+    let products = [
+      { id:1, name:"Engineering Mathematics Book", price:350, category:"Books", condition:"Good", seller:"Rahul", college:"ABC College", img:"https://loremflickr.com/400/300/textbook,math?lock=1", description:"Engineering Mathematics complete semester book, all chapters covered with solved examples." },
+      { id:2, name:"HP Laptop 14", price:28000, category:"Electronics", condition:"Like New", seller:"Aman", college:"XYZ University", img:"https://loremflickr.com/400/300/laptop?lock=2", description:"HP laptop in excellent condition. Perfect for coding and college work. Barely used." },
+      { id:3, name:"DBMS Complete Notes", price:150, category:"Notes", condition:"Like New", seller:"Priya", college:"ABC College", img:"https://loremflickr.com/400/300/notebook,handwriting?lock=3", description:"Handwritten DBMS notes covering the complete syllabus with diagrams and examples." },
+      { id:4, name:"Study Table", price:1200, category:"Furniture", condition:"Good", seller:"Rohit", college:"DEF College", img:"https://loremflickr.com/400/300/deskchair,study?lock=4", description:"Strong wooden study table. Ideal for hostel rooms, easy to disassemble for moving." },
+      { id:5, name:"Hero Bicycle", price:3500, category:"Cycles", condition:"Good", seller:"Karan", college:"XYZ University", img:"https://loremflickr.com/400/300/bicycle?lock=5", description:"Well maintained bicycle for college commuting, recently serviced." },
+      { id:6, name:"Scientific Calculator", price:450, category:"Other", condition:"Good", seller:"Neha", college:"ABC College", img:"https://loremflickr.com/400/300/calculator?lock=6", description:"Scientific calculator, perfect for engineering students, all functions working." },
+      { id:7, name:"Programming in C Book", price:250, category:"Books", condition:"Used", seller:"Vikas", college:"DEF College", img:"https://loremflickr.com/400/300/programming,book?lock=7", description:"Programming in C textbook for first year students, some highlighting inside." },
+      { id:8, name:"Bluetooth Headphones", price:900, category:"Electronics", condition:"Good", seller:"Ankit", college:"XYZ University", img:"https://loremflickr.com/400/300/headphones?lock=8", description:"Wireless Bluetooth headphones with good battery life, comes with charging cable." }
+    ];
+
+    const categoryImageKeyword = {
+      Books:"textbook", Electronics:"electronics", Notes:"notebook",
+      Furniture:"furniture", Cycles:"bicycle", Other:"backpack"
+    };
+
+    let selectedProduct = null;
+    let cart = [];
+    try{ cart = JSON.parse(localStorage.getItem("campusCart")) || []; }catch(e){ cart = []; }
+
+    /* ---------- DISPLAY PRODUCTS ---------- */
+    function displayProducts(list = products){
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
+      document.getElementById("productCount").innerText = list.length + " items available";
+
+      if(list.length === 0){
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:60px 20px; background:var(--paper); border-radius:12px; border:1px solid var(--line);">
+            <div style="font-size:38px; margin-bottom:10px;">🔍</div>
+            <h3 style="margin-bottom:6px; font-family:'Fraunces',serif; font-weight:600;">No listings found</h3>
+            <p style="color:var(--ink-45); font-size:14px;">Try another search term or category.</p>
+          </div>`;
+        return;
+      }
+
+      list.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        const condClass = product.condition === "Like New" ? "new" : "";
+        card.innerHTML = `
+          <div class="product-image">
+            <span class="condition ${condClass}">${product.condition}</span>
+            <button class="heart" onclick="toggleWishlist(this, ${product.id})">♡</button>
+            <img src="${product.img}" alt="${product.name}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'img-fallback',innerText:'🖼️'}))">
+          </div>
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <div class="price">₹${product.price.toLocaleString("en-IN")}</div>
+            <div class="seller">👤 ${product.seller} • ${product.college}</div>
+            <div class="product-buttons">
+              <button class="details-btn" onclick="showDetails(${product.id})">View</button>
+              <button class="cart-btn-item" onclick="addToCart(${product.id})">Add to cart</button>
+            </div>
+          </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    /* ---------- SEARCH & FILTER ---------- */
+    function searchProducts(){
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      );
+      displayProducts(filtered);
+    }
+
+    function filterCategory(category, button){
+      sfxClick();
+      if(button){
+        document.querySelectorAll(".filters button").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+      }
+      if(category === "All"){
+        displayProducts(products);
+      }else{
+        displayProducts(products.filter(p => p.category === category));
+      }
+      document.getElementById("products").scrollIntoView({ behavior:"smooth" });
+    }
+
+    /* ---------- PRODUCT DETAILS MODAL ---------- */
+    function showDetails(id){
+      selectedProduct = products.find(p => p.id === id);
+      if(!selectedProduct) return;
+      sfxClick();
+      document.getElementById("modalIcon").src = selectedProduct.img;
+      document.getElementById("modalIcon").alt = selectedProduct.name;
+      document.getElementById("modalTitle").innerText = selectedProduct.name;
+      document.getElementById("modalPrice").innerText = "₹" + selectedProduct.price.toLocaleString("en-IN");
+      document.getElementById("modalDescription").innerText = selectedProduct.description;
+      document.getElementById("modalSeller").innerText = "👤 Seller: " + selectedProduct.seller + " • " + selectedProduct.college;
+      document.getElementById("productModal").classList.add("show");
+    }
+
+    function closeModal(){
+      document.getElementById("productModal").classList.remove("show");
+    }
+
+    /* ---------- CART ---------- */
+    function saveCart(){
+      try{ localStorage.setItem("campusCart", JSON.stringify(cart)); }catch(e){}
+    }
+
+    function addToCart(id){
+      const product = products.find(p => p.id === id);
+      if(!product) return;
+      cart.push(product);
+      saveCart();
+      sfxAdd();
+      updateCartCount(true);
+      showToast(product.name + " added to cart");
+    }
+
+    function addToCartFromModal(){
+      if(selectedProduct){
+        addToCart(selectedProduct.id);
+        closeModal();
+      }
+    }
+
+    function updateCartCount(bump){
+      const countEl = document.getElementById("cartCount");
+      if(cart.length > 0){
+        countEl.style.display = "flex";
+        countEl.innerText = cart.length;
+        if(bump){
+          countEl.classList.remove("bump");
+          void countEl.offsetWidth;
+          countEl.classList.add("bump");
+        }
+      }else{
+        countEl.style.display = "none";
+      }
+    }
+
+    function renderDrawer(){
+      const itemsEl = document.getElementById("drawerItems");
+      const totalEl = document.getElementById("drawerTotal");
+
+      if(cart.length === 0){
+        itemsEl.innerHTML = `
+          <div class="drawer-empty">
+            <span class="e-icon">🛒</span>
+            Your cart is empty.<br>Browse listings to add something.
+          </div>`;
+        totalEl.innerText = "₹0";
+        return;
+      }
+
+      itemsEl.innerHTML = cart.map((item, idx) => `
+        <div class="drawer-item">
+          <div class="di-icon"><img src="${item.img}" alt=""></div>
+          <div class="di-info">
+            <h4>${item.name}</h4>
+            <span>₹${item.price.toLocaleString("en-IN")}</span>
+          </div>
+          <button class="di-remove" onclick="removeFromCart(${idx})">Remove</button>
+        </div>
+      `).join("");
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      totalEl.innerText = "₹" + total.toLocaleString("en-IN");
+    }
+
+    function removeFromCart(idx){
+      cart.splice(idx, 1);
+      saveCart();
+      sfxRemove();
+      updateCartCount(false);
+      renderDrawer();
+    }
+
+    function openDrawer(){
+      sfxWhoosh();
+      renderDrawer();
+      document.getElementById("drawerOverlay").classList.add("show");
+      document.getElementById("cartDrawer").classList.add("show");
+    }
+
+    function closeDrawer(){
+      document.getElementById("drawerOverlay").classList.remove("show");
+      document.getElementById("cartDrawer").classList.remove("show");
+    }
+
+    function checkoutCart(){
+      if(cart.length === 0){
+        showToast("Your cart is empty");
+        return;
+      }
+      sfxSuccess();
+      showToast("🎉 Order placed — the seller will contact you soon!");
+      cart = [];
+      saveCart();
+      updateCartCount(false);
+      renderDrawer();
+      closeDrawer();
+    }
+
+    /* ---------- WISHLIST ---------- */
+    function toggleWishlist(button, id){
+      button.classList.toggle("liked");
+      if(button.classList.contains("liked")){
+        button.innerText = "♥";
+        sfxLike();
+        showToast("Added to wishlist");
+      }else{
+        button.innerText = "♡";
+        sfxClick();
+        showToast("Removed from wishlist");
+      }
+    }
+
+    /* ---------- SELL FORM ---------- */
+    document.getElementById("sellForm").addEventListener("submit", function(event){
+      event.preventDefault();
+
+      const newProduct = {
+        id: Date.now(),
+        name: document.getElementById("itemName").value,
+        price: Number(document.getElementById("itemPrice").value),
+        category: document.getElementById("itemCategory").value,
+        condition: document.getElementById("itemCondition").value,
+        seller: document.getElementById("sellerName").value,
+        college: document.getElementById("collegeName").value,
+        img: "https://loremflickr.com/400/300/" + getCategoryImageKeyword(document.getElementById("itemCategory").value) + "?lock=" + Date.now(),
+        description: document.getElementById("itemDescription").value
+      };
+
+      products.unshift(newProduct);
+      displayProducts(products);
+      this.reset();
+      sfxSuccess();
+      showToast("🎉 Your item has been listed successfully!");
+      document.getElementById("products").scrollIntoView({ behavior:"smooth" });
+    });
+
+    function getCategoryImageKeyword(category){
+      return categoryImageKeyword[category] || "student";
+    }
+
+    /* ---------- TOAST ---------- */
+    let toastTimer = null;
+    function showToast(message){
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.classList.remove("show"); }, 2500);
+    }
+
+    /* ---------- SCROLL / MODALS ---------- */
+    function scrollToSell(){
+      sfxClick();
+      document.getElementById("sell").scrollIntoView({ behavior:"smooth" });
+    }
+
+    document.getElementById("productModal").addEventListener("click", function(event){
+      if(event.target === this) closeModal();
+    });
+
+    /* ---------- STAT COUNTERS ---------- */
+    function animateCounters(){
+      const stats = document.querySelectorAll(".stat h3[data-count]");
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            const el = entry.target;
+            const target = Number(el.dataset.count);
+            const prefix = el.dataset.prefix || "";
+            const suffix = el.dataset.suffix || "K+";
+            let displaySuffix = suffix;
+            let displayTarget = target;
+            if(!el.dataset.prefix && !el.dataset.suffix){
+              displayTarget = target / 1000;
+            }
+            const duration = 1100;
+            const start = performance.now();
+
+            function tick(now){
+              const progress = Math.min((now - start) / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const current = displayTarget * eased;
+              if(el.dataset.prefix){
+                el.innerText = prefix + current.toFixed(1) + suffix;
+              }else{
+                el.innerText = current.toFixed(1) + suffix;
+              }
+              if(progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+            observer.unobserve(el);
+          }
+        });
+      }, { threshold: 0.4 });
+
+      stats.forEach(el => observer.observe(el));
+    }
+
+    /* ---------- INIT ---------- */
+    displayProducts(products);
+    updateCartCount(false);
+    animateCounters();
+  </script>
+
+</body>
+</html>
